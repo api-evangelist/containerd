@@ -1,0 +1,489 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://containerd.io/schemas/config.json",
+  "title": "Containerd Configuration",
+  "description": "Schema for the containerd daemon configuration file (config.toml), which controls the behavior of the containerd container runtime including plugin settings, runtime options, storage paths, and gRPC server configuration.",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "integer",
+      "description": "Configuration file format version, currently version 2 is the latest",
+      "enum": [1, 2]
+    },
+    "root": {
+      "type": "string",
+      "description": "Root directory for containerd metadata and state storage",
+      "default": "/var/lib/containerd"
+    },
+    "state": {
+      "type": "string",
+      "description": "Directory for containerd runtime state such as sockets and pid files",
+      "default": "/run/containerd"
+    },
+    "temp": {
+      "type": "string",
+      "description": "Temporary directory for containerd operations, defaults to system temp if empty"
+    },
+    "oom_score": {
+      "type": "integer",
+      "description": "Out-of-memory score adjustment for the containerd process",
+      "minimum": -1000,
+      "maximum": 1000,
+      "default": 0
+    },
+    "imports": {
+      "type": "array",
+      "description": "List of additional configuration file paths or glob patterns to import and merge",
+      "items": {
+        "type": "string"
+      }
+    },
+    "grpc": {
+      "$ref": "#/$defs/GRPCConfig"
+    },
+    "ttrpc": {
+      "$ref": "#/$defs/TTRPCConfig"
+    },
+    "debug": {
+      "$ref": "#/$defs/DebugConfig"
+    },
+    "metrics": {
+      "$ref": "#/$defs/MetricsConfig"
+    },
+    "disabled_plugins": {
+      "type": "array",
+      "description": "List of plugin IDs to disable at startup",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_plugins": {
+      "type": "array",
+      "description": "List of plugin IDs that must successfully load or containerd will abort",
+      "items": {
+        "type": "string"
+      }
+    },
+    "plugins": {
+      "$ref": "#/$defs/PluginsConfig"
+    },
+    "stream_processors": {
+      "type": "object",
+      "description": "Map of media type to stream processor configuration for content handling",
+      "additionalProperties": {
+        "$ref": "#/$defs/StreamProcessor"
+      }
+    },
+    "timeouts": {
+      "type": "object",
+      "description": "Map of timeout names to duration strings for various containerd operations",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9]+(ms|s|m|h)$"
+      }
+    },
+    "proxy_plugins": {
+      "type": "object",
+      "description": "Configuration for external proxy plugins that connect via socket",
+      "additionalProperties": {
+        "$ref": "#/$defs/ProxyPlugin"
+      }
+    }
+  },
+  "$defs": {
+    "GRPCConfig": {
+      "type": "object",
+      "description": "Configuration for the containerd gRPC API server socket",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "Unix socket path for the gRPC API endpoint",
+          "default": "/run/containerd/containerd.sock"
+        },
+        "tcp_address": {
+          "type": "string",
+          "description": "Optional TCP address for remote gRPC access in host:port format"
+        },
+        "tcp_tls_ca": {
+          "type": "string",
+          "description": "Path to the CA certificate for TCP TLS connections"
+        },
+        "tcp_tls_cert": {
+          "type": "string",
+          "description": "Path to the server certificate for TCP TLS connections"
+        },
+        "tcp_tls_key": {
+          "type": "string",
+          "description": "Path to the server private key for TCP TLS connections"
+        },
+        "uid": {
+          "type": "integer",
+          "description": "User ID for the Unix socket ownership",
+          "minimum": 0
+        },
+        "gid": {
+          "type": "integer",
+          "description": "Group ID for the Unix socket ownership",
+          "minimum": 0
+        },
+        "max_recv_message_size": {
+          "type": "integer",
+          "description": "Maximum gRPC receive message size in bytes",
+          "minimum": 0,
+          "default": 16777216
+        },
+        "max_send_message_size": {
+          "type": "integer",
+          "description": "Maximum gRPC send message size in bytes",
+          "minimum": 0,
+          "default": 16777216
+        }
+      }
+    },
+    "TTRPCConfig": {
+      "type": "object",
+      "description": "Configuration for the containerd TTRPC (lightweight RPC) server socket",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "Unix socket path for the TTRPC endpoint",
+          "default": ""
+        },
+        "uid": {
+          "type": "integer",
+          "description": "User ID for the Unix socket ownership",
+          "minimum": 0
+        },
+        "gid": {
+          "type": "integer",
+          "description": "Group ID for the Unix socket ownership",
+          "minimum": 0
+        }
+      }
+    },
+    "DebugConfig": {
+      "type": "object",
+      "description": "Configuration for containerd debug and profiling options",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "Socket address for the debug API endpoint"
+        },
+        "uid": {
+          "type": "integer",
+          "description": "User ID for the debug socket ownership",
+          "minimum": 0
+        },
+        "gid": {
+          "type": "integer",
+          "description": "Group ID for the debug socket ownership",
+          "minimum": 0
+        },
+        "level": {
+          "type": "string",
+          "description": "Logging level for containerd daemon output",
+          "enum": ["trace", "debug", "info", "warn", "error", "fatal", "panic"],
+          "default": "info"
+        },
+        "format": {
+          "type": "string",
+          "description": "Log output format",
+          "enum": ["text", "json"],
+          "default": "text"
+        }
+      }
+    },
+    "MetricsConfig": {
+      "type": "object",
+      "description": "Configuration for containerd Prometheus metrics endpoint",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "TCP address in host:port format for the metrics HTTP endpoint"
+        },
+        "grpc_histogram": {
+          "type": "boolean",
+          "description": "Enable gRPC connection histogram metrics collection",
+          "default": false
+        }
+      }
+    },
+    "PluginsConfig": {
+      "type": "object",
+      "description": "Configuration block for containerd plugins, keyed by plugin URI",
+      "properties": {
+        "io.containerd.grpc.v1.cri": {
+          "$ref": "#/$defs/CRIPluginConfig"
+        },
+        "io.containerd.snapshotter.v1.overlayfs": {
+          "type": "object",
+          "description": "Configuration for the overlayfs snapshotter plugin",
+          "properties": {
+            "root_path": {
+              "type": "string",
+              "description": "Root path for overlayfs snapshotter storage"
+            },
+            "upperdir_label": {
+              "type": "boolean",
+              "description": "Enable SELinux labeling on upper directories"
+            }
+          }
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "description": "Plugin-specific configuration; structure varies by plugin"
+      }
+    },
+    "CRIPluginConfig": {
+      "type": "object",
+      "description": "Configuration for the Container Runtime Interface (CRI) plugin that enables Kubernetes integration",
+      "properties": {
+        "sandbox_image": {
+          "type": "string",
+          "description": "Container image used for the pod sandbox (pause container)",
+          "default": "registry.k8s.io/pause:3.9"
+        },
+        "max_container_log_line_size": {
+          "type": "integer",
+          "description": "Maximum line size in bytes for container log files, -1 for unlimited",
+          "default": 16384
+        },
+        "max_concurrent_downloads": {
+          "type": "integer",
+          "description": "Maximum number of concurrent image pull operations",
+          "minimum": 1,
+          "default": 3
+        },
+        "tolerate_missing_hugetlb_controller": {
+          "type": "boolean",
+          "description": "Tolerate a missing hugetlb cgroup controller when creating containers",
+          "default": true
+        },
+        "disable_hugetlb_controller": {
+          "type": "boolean",
+          "description": "Disable hugetlb cgroup controller regardless of availability",
+          "default": true
+        },
+        "containerd": {
+          "type": "object",
+          "description": "Containerd runtime configuration within the CRI plugin",
+          "properties": {
+            "snapshotter": {
+              "type": "string",
+              "description": "Snapshotter to use for container root filesystems",
+              "default": "overlayfs"
+            },
+            "default_runtime_name": {
+              "type": "string",
+              "description": "Name of the default container runtime to use",
+              "default": "runc"
+            },
+            "runtimes": {
+              "type": "object",
+              "description": "Map of named runtime configurations",
+              "additionalProperties": {
+                "$ref": "#/$defs/RuntimeConfig"
+              }
+            }
+          }
+        },
+        "cni": {
+          "type": "object",
+          "description": "Container Network Interface plugin configuration",
+          "properties": {
+            "bin_dir": {
+              "type": "string",
+              "description": "Directory containing CNI plugin binaries",
+              "default": "/opt/cni/bin"
+            },
+            "conf_dir": {
+              "type": "string",
+              "description": "Directory containing CNI configuration files",
+              "default": "/etc/cni/net.d"
+            },
+            "max_conf_num": {
+              "type": "integer",
+              "description": "Maximum number of CNI configuration files to load",
+              "minimum": 0
+            },
+            "conf_template": {
+              "type": "string",
+              "description": "Path to a CNI configuration template file"
+            }
+          }
+        },
+        "registry": {
+          "type": "object",
+          "description": "Container image registry configuration including mirrors and authentication",
+          "properties": {
+            "config_path": {
+              "type": "string",
+              "description": "Path to the directory containing per-host registry configuration"
+            },
+            "mirrors": {
+              "type": "object",
+              "description": "Registry mirror configuration mapped by registry host",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "endpoint": {
+                    "type": "array",
+                    "description": "List of mirror endpoint URLs for this registry",
+                    "items": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            },
+            "configs": {
+              "type": "object",
+              "description": "Per-registry TLS and authentication configuration",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "tls": {
+                    "type": "object",
+                    "description": "TLS configuration for the registry",
+                    "properties": {
+                      "insecure_skip_verify": {
+                        "type": "boolean",
+                        "description": "Skip TLS certificate verification for this registry"
+                      },
+                      "ca_file": {
+                        "type": "string",
+                        "description": "Path to the CA certificate for this registry"
+                      },
+                      "cert_file": {
+                        "type": "string",
+                        "description": "Path to the client certificate for this registry"
+                      },
+                      "key_file": {
+                        "type": "string",
+                        "description": "Path to the client key for this registry"
+                      }
+                    }
+                  },
+                  "auth": {
+                    "type": "object",
+                    "description": "Authentication credentials for this registry",
+                    "properties": {
+                      "username": {
+                        "type": "string",
+                        "description": "Registry authentication username"
+                      },
+                      "password": {
+                        "type": "string",
+                        "description": "Registry authentication password"
+                      },
+                      "auth": {
+                        "type": "string",
+                        "description": "Base64-encoded username:password authentication token"
+                      },
+                      "identitytoken": {
+                        "type": "string",
+                        "description": "Identity token for registry authentication"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "RuntimeConfig": {
+      "type": "object",
+      "description": "Configuration for a named container runtime",
+      "properties": {
+        "runtime_type": {
+          "type": "string",
+          "description": "Type identifier for the runtime shim",
+          "examples": ["io.containerd.runc.v2", "io.containerd.kata.v2"]
+        },
+        "runtime_path": {
+          "type": "string",
+          "description": "Absolute path to the runtime binary, overrides runtime_type lookup"
+        },
+        "privileged_without_host_devices": {
+          "type": "boolean",
+          "description": "Run privileged containers without host device access",
+          "default": false
+        },
+        "options": {
+          "type": "object",
+          "description": "Runtime-specific options such as runc binary path and systemd cgroup usage",
+          "properties": {
+            "BinaryName": {
+              "type": "string",
+              "description": "Path to the OCI runtime binary"
+            },
+            "SystemdCgroup": {
+              "type": "boolean",
+              "description": "Use systemd cgroup driver instead of cgroupfs",
+              "default": false
+            },
+            "Root": {
+              "type": "string",
+              "description": "Root directory for runtime state"
+            }
+          }
+        }
+      }
+    },
+    "StreamProcessor": {
+      "type": "object",
+      "description": "Configuration for a content stream processor that handles specific media types",
+      "properties": {
+        "accepts": {
+          "type": "array",
+          "description": "List of media types this processor accepts as input",
+          "items": {
+            "type": "string"
+          }
+        },
+        "returns": {
+          "type": "string",
+          "description": "Media type returned after processing"
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to the stream processor binary"
+        },
+        "args": {
+          "type": "array",
+          "description": "Arguments to pass to the stream processor binary",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "type": "array",
+          "description": "Environment variables for the stream processor in KEY=VALUE format",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ProxyPlugin": {
+      "type": "object",
+      "description": "Configuration for an external proxy plugin that connects via a Unix socket",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Plugin type such as snapshot, content, or diff",
+          "enum": ["snapshot", "content", "diff"]
+        },
+        "address": {
+          "type": "string",
+          "description": "Unix socket address for the proxy plugin"
+        }
+      },
+      "required": ["type", "address"]
+    }
+  }
+}

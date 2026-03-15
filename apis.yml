@@ -7,7 +7,38 @@ tags:
 - Cloud Native
 - Kubernetes
 - Docker
+- OCI
+- gRPC
+- CRI
 created: '2025'
 modified: '2025'
-apis: []
-common: []
+apis:
+- name: Containerd gRPC API
+  description: >-
+    Core gRPC API for managing the full container lifecycle including
+    containers, images, content, snapshots, namespaces, tasks, leases,
+    events, and plugins. Provides low-level access to all containerd
+    functionality through Protocol Buffers service definitions.
+  url: https://github.com/containerd/containerd/tree/main/api
+  properties:
+  - type: JSONSchema
+    url: json-schema/containerd-config-schema.json
+  - type: JSONSchema
+    url: json-schema/containerd-oci-runtime-spec-schema.json
+- name: Containerd CRI API
+  description: >-
+    Container Runtime Interface (CRI) implementation that enables
+    Kubernetes to use containerd as its container runtime. Supports
+    pod sandbox management, container lifecycle operations, image
+    pulling, and streaming APIs for exec, attach, and port-forward.
+  url: https://github.com/containerd/containerd/tree/main/pkg/cri
+  properties:
+  - type: JSONSchema
+    url: json-schema/containerd-config-schema.json
+common:
+- type: JSON-LD
+  url: json-ld/containerd-context.jsonld
+- type: JSONSchema
+  url: json-schema/containerd-config-schema.json
+- type: JSONSchema
+  url: json-schema/containerd-oci-runtime-spec-schema.json

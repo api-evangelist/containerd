@@ -1,0 +1,710 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://containerd.io/schemas/oci-runtime-spec.json",
+  "title": "OCI Runtime Specification",
+  "description": "Schema for the OCI (Open Container Initiative) runtime specification config.json used by containerd to define container configuration including process, mounts, Linux-specific settings, and resource constraints.",
+  "type": "object",
+  "required": ["ociVersion", "root"],
+  "properties": {
+    "ociVersion": {
+      "type": "string",
+      "description": "Version of the OCI runtime specification this config conforms to",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-.*)?$",
+      "examples": ["1.0.2", "1.1.0"]
+    },
+    "root": {
+      "$ref": "#/$defs/Root"
+    },
+    "mounts": {
+      "type": "array",
+      "description": "List of additional filesystem mounts beyond the root filesystem",
+      "items": {
+        "$ref": "#/$defs/Mount"
+      }
+    },
+    "process": {
+      "$ref": "#/$defs/Process"
+    },
+    "hostname": {
+      "type": "string",
+      "description": "Hostname to set inside the container"
+    },
+    "domainname": {
+      "type": "string",
+      "description": "Domain name to set inside the container"
+    },
+    "annotations": {
+      "type": "object",
+      "description": "Arbitrary metadata key-value pairs associated with the container using reverse domain name notation for keys",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "hooks": {
+      "$ref": "#/$defs/Hooks"
+    },
+    "linux": {
+      "$ref": "#/$defs/Linux"
+    }
+  },
+  "$defs": {
+    "Root": {
+      "type": "object",
+      "description": "Root filesystem configuration for the container",
+      "required": ["path"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to the root filesystem bundle, either absolute or relative to the bundle directory"
+        },
+        "readonly": {
+          "type": "boolean",
+          "description": "Mount the root filesystem as read-only inside the container",
+          "default": false
+        }
+      }
+    },
+    "Mount": {
+      "type": "object",
+      "description": "A filesystem mount point inside the container",
+      "required": ["destination"],
+      "properties": {
+        "destination": {
+          "type": "string",
+          "description": "Absolute path inside the container where the filesystem will be mounted"
+        },
+        "source": {
+          "type": "string",
+          "description": "Source path on the host or device name for the mount"
+        },
+        "type": {
+          "type": "string",
+          "description": "Filesystem type such as proc, tmpfs, sysfs, devpts, or bind",
+          "examples": ["proc", "tmpfs", "sysfs", "devpts", "bind", "cgroup", "mqueue"]
+        },
+        "options": {
+          "type": "array",
+          "description": "Mount options such as nosuid, noexec, nodev, ro, rw, rbind",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Process": {
+      "type": "object",
+      "description": "Container process configuration defining what runs inside the container",
+      "required": ["args"],
+      "properties": {
+        "terminal": {
+          "type": "boolean",
+          "description": "Attach a pseudo-terminal to the process",
+          "default": false
+        },
+        "consoleSize": {
+          "type": "object",
+          "description": "Size of the console terminal in characters",
+          "properties": {
+            "height": {
+              "type": "integer",
+              "description": "Terminal height in characters",
+              "minimum": 0
+            },
+            "width": {
+              "type": "integer",
+              "description": "Terminal width in characters",
+              "minimum": 0
+            }
+          }
+        },
+        "cwd": {
+          "type": "string",
+          "description": "Working directory inside the container for the process"
+        },
+        "env": {
+          "type": "array",
+          "description": "Environment variables for the process in KEY=VALUE format",
+          "items": {
+            "type": "string",
+            "pattern": "^[^=]+=.*$"
+          }
+        },
+        "args": {
+          "type": "array",
+          "description": "Command and arguments to execute as the container entrypoint",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "commandLine": {
+          "type": "string",
+          "description": "Full command line string for Windows containers"
+        },
+        "user": {
+          "$ref": "#/$defs/User"
+        },
+        "capabilities": {
+          "$ref": "#/$defs/Capabilities"
+        },
+        "rlimits": {
+          "type": "array",
+          "description": "Resource limits applied to the container process",
+          "items": {
+            "$ref": "#/$defs/Rlimit"
+          }
+        },
+        "noNewPrivileges": {
+          "type": "boolean",
+          "description": "Prevent the process from gaining additional privileges via setuid or capabilities",
+          "default": false
+        },
+        "apparmorProfile": {
+          "type": "string",
+          "description": "Name of the AppArmor profile to apply to the process"
+        },
+        "oomScoreAdj": {
+          "type": "integer",
+          "description": "Adjustment to the OOM killer score for this process",
+          "minimum": -1000,
+          "maximum": 1000
+        },
+        "selinuxLabel": {
+          "type": "string",
+          "description": "SELinux label to apply to the process"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "description": "User identity under which the container process runs",
+      "properties": {
+        "uid": {
+          "type": "integer",
+          "description": "User ID for the container process",
+          "minimum": 0
+        },
+        "gid": {
+          "type": "integer",
+          "description": "Primary group ID for the container process",
+          "minimum": 0
+        },
+        "umask": {
+          "type": "integer",
+          "description": "File creation mask for the container process",
+          "minimum": 0
+        },
+        "additionalGids": {
+          "type": "array",
+          "description": "Supplementary group IDs for the container process",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "Capabilities": {
+      "type": "object",
+      "description": "Linux capabilities sets controlling fine-grained privilege for the process",
+      "properties": {
+        "bounding": {
+          "type": "array",
+          "description": "Bounding set that limits which capabilities can be acquired",
+          "items": {
+            "type": "string",
+            "pattern": "^CAP_[A-Z_]+$"
+          }
+        },
+        "effective": {
+          "type": "array",
+          "description": "Capabilities currently active for the process",
+          "items": {
+            "type": "string",
+            "pattern": "^CAP_[A-Z_]+$"
+          }
+        },
+        "inheritable": {
+          "type": "array",
+          "description": "Capabilities preserved across an execve call",
+          "items": {
+            "type": "string",
+            "pattern": "^CAP_[A-Z_]+$"
+          }
+        },
+        "permitted": {
+          "type": "array",
+          "description": "Maximum set of capabilities the process may use",
+          "items": {
+            "type": "string",
+            "pattern": "^CAP_[A-Z_]+$"
+          }
+        },
+        "ambient": {
+          "type": "array",
+          "description": "Capabilities applied to non-privileged programs on execve",
+          "items": {
+            "type": "string",
+            "pattern": "^CAP_[A-Z_]+$"
+          }
+        }
+      }
+    },
+    "Rlimit": {
+      "type": "object",
+      "description": "A POSIX resource limit for the container process",
+      "required": ["type", "hard", "soft"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Resource limit type such as RLIMIT_NOFILE or RLIMIT_NPROC",
+          "pattern": "^RLIMIT_[A-Z]+$"
+        },
+        "hard": {
+          "type": "integer",
+          "description": "Hard ceiling for the resource limit",
+          "minimum": 0
+        },
+        "soft": {
+          "type": "integer",
+          "description": "Enforced limit that can be raised up to the hard limit",
+          "minimum": 0
+        }
+      }
+    },
+    "Hooks": {
+      "type": "object",
+      "description": "Lifecycle hooks for container creation, startup, and teardown",
+      "properties": {
+        "prestart": {
+          "type": "array",
+          "description": "Hooks called after the container is created but before it starts (deprecated in favor of createRuntime)",
+          "items": {
+            "$ref": "#/$defs/Hook"
+          }
+        },
+        "createRuntime": {
+          "type": "array",
+          "description": "Hooks called during container creation after the runtime environment is set up",
+          "items": {
+            "$ref": "#/$defs/Hook"
+          }
+        },
+        "createContainer": {
+          "type": "array",
+          "description": "Hooks called during container creation after the container namespace is entered",
+          "items": {
+            "$ref": "#/$defs/Hook"
+          }
+        },
+        "startContainer": {
+          "type": "array",
+          "description": "Hooks called before the user-specified process is executed",
+          "items": {
+            "$ref": "#/$defs/Hook"
+          }
+        },
+        "poststart": {
+          "type": "array",
+          "description": "Hooks called after the user-specified process has started",
+          "items": {
+            "$ref": "#/$defs/Hook"
+          }
+        },
+        "poststop": {
+          "type": "array",
+          "description": "Hooks called after the container process has exited",
+          "items": {
+            "$ref": "#/$defs/Hook"
+          }
+        }
+      }
+    },
+    "Hook": {
+      "type": "object",
+      "description": "A lifecycle hook specifying a command to execute at a particular container lifecycle event",
+      "required": ["path"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Absolute path to the hook executable"
+        },
+        "args": {
+          "type": "array",
+          "description": "Arguments to pass to the hook executable including argv[0]",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "type": "array",
+          "description": "Environment variables for the hook in KEY=VALUE format",
+          "items": {
+            "type": "string"
+          }
+        },
+        "timeout": {
+          "type": "integer",
+          "description": "Maximum time in seconds to wait for the hook to complete",
+          "minimum": 1
+        }
+      }
+    },
+    "Linux": {
+      "type": "object",
+      "description": "Linux-specific container configuration including namespaces, cgroups, seccomp, and device access",
+      "properties": {
+        "namespaces": {
+          "type": "array",
+          "description": "Linux namespaces for container isolation",
+          "items": {
+            "$ref": "#/$defs/Namespace"
+          }
+        },
+        "uidMappings": {
+          "type": "array",
+          "description": "User ID mappings for user namespaces",
+          "items": {
+            "$ref": "#/$defs/IDMapping"
+          }
+        },
+        "gidMappings": {
+          "type": "array",
+          "description": "Group ID mappings for user namespaces",
+          "items": {
+            "$ref": "#/$defs/IDMapping"
+          }
+        },
+        "devices": {
+          "type": "array",
+          "description": "Devices to make available inside the container",
+          "items": {
+            "$ref": "#/$defs/Device"
+          }
+        },
+        "cgroupsPath": {
+          "type": "string",
+          "description": "Path to the cgroup for the container, either absolute or relative to the cgroup mount"
+        },
+        "resources": {
+          "$ref": "#/$defs/Resources"
+        },
+        "seccomp": {
+          "$ref": "#/$defs/Seccomp"
+        },
+        "rootfsPropagation": {
+          "type": "string",
+          "description": "Mount propagation mode for the root filesystem",
+          "enum": ["shared", "slave", "private", "unbindable"]
+        },
+        "maskedPaths": {
+          "type": "array",
+          "description": "Paths inside the container that should be masked (hidden) from the process",
+          "items": {
+            "type": "string"
+          }
+        },
+        "readonlyPaths": {
+          "type": "array",
+          "description": "Paths inside the container that should be mounted read-only",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sysctl": {
+          "type": "object",
+          "description": "Kernel parameters to set inside the container namespace",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "mountLabel": {
+          "type": "string",
+          "description": "SELinux mount label for the container filesystem"
+        }
+      }
+    },
+    "Namespace": {
+      "type": "object",
+      "description": "A Linux namespace used for container isolation",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of Linux namespace",
+          "enum": ["pid", "network", "mount", "ipc", "uts", "user", "cgroup", "time"]
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to an existing namespace to join instead of creating a new one"
+        }
+      }
+    },
+    "IDMapping": {
+      "type": "object",
+      "description": "User or group ID mapping between host and container for user namespaces",
+      "required": ["containerID", "hostID", "size"],
+      "properties": {
+        "containerID": {
+          "type": "integer",
+          "description": "Starting ID inside the container",
+          "minimum": 0
+        },
+        "hostID": {
+          "type": "integer",
+          "description": "Starting ID on the host",
+          "minimum": 0
+        },
+        "size": {
+          "type": "integer",
+          "description": "Number of IDs to map",
+          "minimum": 1
+        }
+      }
+    },
+    "Device": {
+      "type": "object",
+      "description": "A device node to create inside the container",
+      "required": ["type", "path"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Device type: c (character), b (block), u (unbuffered), or p (FIFO)",
+          "enum": ["c", "b", "u", "p"]
+        },
+        "path": {
+          "type": "string",
+          "description": "Absolute path for the device node inside the container"
+        },
+        "major": {
+          "type": "integer",
+          "description": "Device major number",
+          "minimum": 0
+        },
+        "minor": {
+          "type": "integer",
+          "description": "Device minor number",
+          "minimum": 0
+        },
+        "fileMode": {
+          "type": "integer",
+          "description": "File permission mode for the device node"
+        },
+        "uid": {
+          "type": "integer",
+          "description": "User ID of the device node owner",
+          "minimum": 0
+        },
+        "gid": {
+          "type": "integer",
+          "description": "Group ID of the device node owner",
+          "minimum": 0
+        }
+      }
+    },
+    "Resources": {
+      "type": "object",
+      "description": "Linux cgroup resource constraints for the container",
+      "properties": {
+        "memory": {
+          "type": "object",
+          "description": "Memory resource limits",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "description": "Hard memory limit in bytes",
+              "minimum": 0
+            },
+            "reservation": {
+              "type": "integer",
+              "description": "Soft memory limit in bytes",
+              "minimum": 0
+            },
+            "swap": {
+              "type": "integer",
+              "description": "Total memory plus swap limit in bytes, -1 for unlimited",
+              "minimum": -1
+            },
+            "kernel": {
+              "type": "integer",
+              "description": "Kernel memory limit in bytes (deprecated in cgroup v2)",
+              "minimum": 0
+            },
+            "swappiness": {
+              "type": "integer",
+              "description": "Swappiness value from 0 to 100",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "disableOOMKiller": {
+              "type": "boolean",
+              "description": "Disable the OOM killer for this container"
+            }
+          }
+        },
+        "cpu": {
+          "type": "object",
+          "description": "CPU resource limits and scheduling configuration",
+          "properties": {
+            "shares": {
+              "type": "integer",
+              "description": "Relative CPU share weight for scheduling",
+              "minimum": 0
+            },
+            "quota": {
+              "type": "integer",
+              "description": "CPU time quota per period in microseconds, -1 for no limit",
+              "minimum": -1
+            },
+            "period": {
+              "type": "integer",
+              "description": "CPU scheduling period in microseconds",
+              "minimum": 0
+            },
+            "cpus": {
+              "type": "string",
+              "description": "CPUs to use expressed as a list or range (e.g. 0-3, 0,1)",
+              "pattern": "^[0-9][-,0-9]*$"
+            },
+            "mems": {
+              "type": "string",
+              "description": "Memory nodes to use expressed as a list or range",
+              "pattern": "^[0-9][-,0-9]*$"
+            }
+          }
+        },
+        "pids": {
+          "type": "object",
+          "description": "Process count limits for the container",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "description": "Maximum number of processes in the container, -1 for unlimited",
+              "minimum": -1
+            }
+          }
+        },
+        "blockIO": {
+          "type": "object",
+          "description": "Block I/O resource limits",
+          "properties": {
+            "weight": {
+              "type": "integer",
+              "description": "Default block I/O weight from 10 to 1000",
+              "minimum": 10,
+              "maximum": 1000
+            },
+            "weightDevice": {
+              "type": "array",
+              "description": "Per-device block I/O weight overrides",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "major": {
+                    "type": "integer",
+                    "description": "Device major number"
+                  },
+                  "minor": {
+                    "type": "integer",
+                    "description": "Device minor number"
+                  },
+                  "weight": {
+                    "type": "integer",
+                    "description": "Block I/O weight for this device",
+                    "minimum": 10,
+                    "maximum": 1000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Seccomp": {
+      "type": "object",
+      "description": "Seccomp (secure computing mode) configuration for syscall filtering",
+      "required": ["defaultAction"],
+      "properties": {
+        "defaultAction": {
+          "type": "string",
+          "description": "Default action when a syscall does not match any rule",
+          "enum": ["SCMP_ACT_ALLOW", "SCMP_ACT_ERRNO", "SCMP_ACT_KILL", "SCMP_ACT_KILL_PROCESS", "SCMP_ACT_TRAP", "SCMP_ACT_TRACE", "SCMP_ACT_LOG"]
+        },
+        "architectures": {
+          "type": "array",
+          "description": "Architectures to apply the seccomp filter to",
+          "items": {
+            "type": "string",
+            "enum": ["SCMP_ARCH_X86", "SCMP_ARCH_X86_64", "SCMP_ARCH_X32", "SCMP_ARCH_ARM", "SCMP_ARCH_AARCH64", "SCMP_ARCH_MIPS", "SCMP_ARCH_MIPS64", "SCMP_ARCH_MIPSEL", "SCMP_ARCH_MIPSEL64", "SCMP_ARCH_PPC", "SCMP_ARCH_PPC64", "SCMP_ARCH_PPC64LE", "SCMP_ARCH_S390", "SCMP_ARCH_S390X"]
+          }
+        },
+        "flags": {
+          "type": "array",
+          "description": "Flags for the seccomp filter",
+          "items": {
+            "type": "string"
+          }
+        },
+        "syscalls": {
+          "type": "array",
+          "description": "Syscall-specific rules for the seccomp filter",
+          "items": {
+            "type": "object",
+            "required": ["names", "action"],
+            "properties": {
+              "names": {
+                "type": "array",
+                "description": "Syscall names this rule applies to",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              },
+              "action": {
+                "type": "string",
+                "description": "Action to take when the syscall matches",
+                "enum": ["SCMP_ACT_ALLOW", "SCMP_ACT_ERRNO", "SCMP_ACT_KILL", "SCMP_ACT_KILL_PROCESS", "SCMP_ACT_TRAP", "SCMP_ACT_TRACE", "SCMP_ACT_LOG"]
+              },
+              "errnoRet": {
+                "type": "integer",
+                "description": "Errno return value when action is SCMP_ACT_ERRNO"
+              },
+              "args": {
+                "type": "array",
+                "description": "Argument-level conditions for matching this rule",
+                "items": {
+                  "type": "object",
+                  "required": ["index", "value", "op"],
+                  "properties": {
+                    "index": {
+                      "type": "integer",
+                      "description": "Syscall argument index",
+                      "minimum": 0,
+                      "maximum": 5
+                    },
+                    "value": {
+                      "type": "integer",
+                      "description": "Value to compare the argument against",
+                      "minimum": 0
+                    },
+                    "valueTwo": {
+                      "type": "integer",
+                      "description": "Second value for range comparisons",
+                      "minimum": 0
+                    },
+                    "op": {
+                      "type": "string",
+                      "description": "Comparison operator",
+                      "enum": ["SCMP_CMP_NE", "SCMP_CMP_LT", "SCMP_CMP_LE", "SCMP_CMP_EQ", "SCMP_CMP_GE", "SCMP_CMP_GT", "SCMP_CMP_MASKED_EQ"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

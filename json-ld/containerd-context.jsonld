@@ -1,0 +1,220 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "containerd": "https://containerd.io/ns/",
+    "oci": "https://opencontainers.org/ns/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "cncf": "https://www.cncf.io/ns/",
+    "k8s": "https://kubernetes.io/ns/",
+
+    "ContainerRuntime": {
+      "@id": "containerd:ContainerRuntime",
+      "@context": {
+        "name": "schema:name",
+        "version": "schema:softwareVersion",
+        "description": "schema:description",
+        "url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
+        "license": "schema:license",
+        "repository": {
+          "@id": "schema:codeRepository",
+          "@type": "@id"
+        }
+      }
+    },
+
+    "Container": {
+      "@id": "containerd:Container",
+      "@context": {
+        "id": "containerd:containerId",
+        "image": "containerd:containerImage",
+        "runtime": "containerd:runtime",
+        "status": "containerd:containerStatus",
+        "pid": "containerd:processId",
+        "labels": "containerd:labels",
+        "createdAt": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updatedAt": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        },
+        "snapshotter": "containerd:snapshotter",
+        "snapshotKey": "containerd:snapshotKey",
+        "extensions": "containerd:extensions"
+      }
+    },
+
+    "Image": {
+      "@id": "containerd:Image",
+      "@context": {
+        "name": "schema:name",
+        "target": "containerd:imageTarget",
+        "digest": "oci:digest",
+        "mediaType": "oci:mediaType",
+        "size": {
+          "@id": "schema:contentSize",
+          "@type": "xsd:integer"
+        },
+        "labels": "containerd:labels",
+        "createdAt": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updatedAt": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Namespace": {
+      "@id": "containerd:Namespace",
+      "@context": {
+        "name": "schema:name",
+        "labels": "containerd:labels"
+      }
+    },
+
+    "Snapshot": {
+      "@id": "containerd:Snapshot",
+      "@context": {
+        "key": "containerd:snapshotKey",
+        "parent": "containerd:parentSnapshot",
+        "kind": "containerd:snapshotKind",
+        "inodes": {
+          "@id": "containerd:inodeUsage",
+          "@type": "xsd:integer"
+        },
+        "diskSize": {
+          "@id": "containerd:diskSize",
+          "@type": "xsd:integer"
+        },
+        "createdAt": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updatedAt": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Task": {
+      "@id": "containerd:Task",
+      "@context": {
+        "containerId": "containerd:containerId",
+        "pid": {
+          "@id": "containerd:processId",
+          "@type": "xsd:integer"
+        },
+        "status": "containerd:taskStatus",
+        "stdin": "containerd:stdin",
+        "stdout": "containerd:stdout",
+        "stderr": "containerd:stderr",
+        "exitStatus": {
+          "@id": "containerd:exitStatus",
+          "@type": "xsd:integer"
+        },
+        "exitedAt": {
+          "@id": "containerd:exitedAt",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Content": {
+      "@id": "containerd:Content",
+      "@context": {
+        "digest": "oci:digest",
+        "mediaType": "oci:mediaType",
+        "size": {
+          "@id": "schema:contentSize",
+          "@type": "xsd:integer"
+        },
+        "labels": "containerd:labels",
+        "createdAt": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updatedAt": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Lease": {
+      "@id": "containerd:Lease",
+      "@context": {
+        "id": "containerd:leaseId",
+        "labels": "containerd:labels",
+        "createdAt": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "OCIRuntimeSpec": {
+      "@id": "oci:RuntimeSpec",
+      "@context": {
+        "ociVersion": "oci:specVersion",
+        "hostname": "schema:hostname",
+        "root": "oci:rootFilesystem",
+        "mounts": {
+          "@id": "oci:mounts",
+          "@container": "@set"
+        },
+        "process": "oci:containerProcess",
+        "annotations": "oci:annotations",
+        "hooks": "oci:lifecycleHooks"
+      }
+    },
+
+    "CRIRuntime": {
+      "@id": "k8s:ContainerRuntimeInterface",
+      "@context": {
+        "sandboxImage": "k8s:pauseImage",
+        "runtimeHandler": "k8s:runtimeHandler",
+        "podSandbox": "k8s:podSandbox",
+        "containerConfig": "k8s:containerConfig"
+      }
+    },
+
+    "Plugin": {
+      "@id": "containerd:Plugin",
+      "@context": {
+        "type": "containerd:pluginType",
+        "id": "containerd:pluginId",
+        "requires": {
+          "@id": "containerd:requires",
+          "@container": "@set"
+        },
+        "platforms": {
+          "@id": "schema:operatingSystem",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "Event": {
+      "@id": "containerd:Event",
+      "@context": {
+        "topic": "containerd:eventTopic",
+        "namespace": "containerd:namespace",
+        "timestamp": {
+          "@id": "dcterms:date",
+          "@type": "xsd:dateTime"
+        },
+        "event": "containerd:eventPayload"
+      }
+    }
+  }
+}
