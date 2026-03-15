@@ -1,0 +1,13 @@
+name: Containerd
+description: An industry-standard container runtime with an emphasis on simplicity,
+  robustness and portability
+url: https://containerd.io/
+tags:
+- Container Runtime
+- Cloud Native
+- Kubernetes
+- Docker
+created: '2025'
+modified: '2025'
+apis: []
+common: []
