@@ -1,0 +1,69 @@
+openapi: 3.1.0
+info:
+  title: Containerd Metrics API
+  description: >-
+    The containerd metrics plugin exposes a Prometheus-compatible HTTP endpoint
+    for scraping runtime metrics. When enabled via the metrics.address
+    configuration option in config.toml, it serves Prometheus text format
+    metrics covering gRPC request counts, latency histograms, snapshot usage,
+    content store statistics, and task lifecycle events. This endpoint enables
+    integration with Prometheus, Grafana, and other observability tooling for
+    monitoring the containerd container runtime.
+  version: '2.x'
+  contact:
+    name: Containerd Community
+    url: https://containerd.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+externalDocs:
+  description: Containerd Documentation
+  url: https://containerd.io/docs/
+servers:
+  - url: http://localhost:1338
+    description: >-
+      Containerd metrics HTTP server. Address is configured via
+      metrics.address in config.toml (e.g., "127.0.0.1:1338").
+tags:
+  - name: Metrics
+    description: >-
+      Prometheus-compatible metrics endpoints exposing containerd runtime
+      statistics including gRPC request rates, snapshot usage, and task
+      lifecycle counts.
+paths:
+  /v1/metrics:
+    get:
+      operationId: getMetrics
+      summary: Get Prometheus metrics
+      description: >-
+        Returns all containerd metrics in Prometheus text exposition format.
+        Metrics include gRPC server request counts and latency histograms
+        (when grpc_histogram is enabled), snapshotter usage statistics,
+        content store byte counts, task start and exit counters, and
+        container count gauges. Each metric is labeled by namespace,
+        snapshotter, or plugin type as appropriate. Requires the metrics
+        address to be configured in the containerd config.toml.
+      tags:
+        - Metrics
+      responses:
+        '200':
+          description: Prometheus text format metrics.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: >-
+                  Prometheus exposition format text (version 0.0.4). Lines
+                  beginning with # HELP describe the metric, # TYPE lines
+                  declare metric type (counter, gauge, histogram, summary),
+                  and sample lines contain the metric name, optional labels,
+                  value, and optional timestamp. Key metrics include
+                  container_tasks_running, container_running_time_microseconds,
+                  grpc_server_handled_total, and snapshot_stats.
+              example: |
+                # HELP containerd_snapshotter_snapshot_inodes_usage Snapshot inodes usage in bytes.
+                # TYPE containerd_snapshotter_snapshot_inodes_usage gauge
+                containerd_snapshotter_snapshot_inodes_usage{snapshotter="overlayfs"} 1024
+                # HELP grpc_server_handled_total Total number of RPCs completed on the server.
+                # TYPE grpc_server_handled_total counter
+                grpc_server_handled_total{grpc_code="OK",grpc_method="ListContainers",grpc_service="containerd.services.containers.v1.Containers",grpc_type="unary"} 42
