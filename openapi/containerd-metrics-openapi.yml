@@ -34,7 +34,7 @@ paths:
   /v1/metrics:
     get:
       operationId: getMetrics
-      summary: Get Prometheus metrics
+      summary: Containerd Get Prometheus metrics
       description: >-
         Returns all containerd metrics in Prometheus text exposition format.
         Metrics include gRPC server request counts and latency histograms
