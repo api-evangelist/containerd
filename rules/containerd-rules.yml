@@ -1,0 +1,76 @@
+extends:
+  - spectral:oas
+
+# Spectral linting rules for containerd HTTP-style APIs (the metrics
+# plugin endpoint). Tuned to a localhost-only Prometheus scrape target
+# served from the containerd process, with no auth and a single GET
+# /v1/metrics path returning Prometheus text format.
+rules:
+  containerd-info-contact:
+    description: API contact information must be present.
+    severity: error
+    given: "$.info"
+    then:
+      field: contact
+      function: truthy
+
+  containerd-info-license:
+    description: containerd APIs must declare an Apache 2.0 license.
+    severity: error
+    given: "$.info.license"
+    then:
+      field: name
+      function: pattern
+      functionOptions:
+        match: "Apache"
+
+  containerd-server-localhost:
+    description: Metrics endpoints typically bind to localhost; warn if the spec advertises a non-loopback host.
+    severity: info
+    given: "$.servers[*].url"
+    then:
+      function: pattern
+      functionOptions:
+        match: "(localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0)"
+
+  containerd-operation-id:
+    description: Every operation must declare a unique operationId.
+    severity: error
+    given: "$.paths[*][get,post,put,patch,delete]"
+    then:
+      field: operationId
+      function: truthy
+
+  containerd-operation-tags:
+    description: Operations must declare at least one tag.
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete]"
+    then:
+      field: tags
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          minItems: 1
+
+  containerd-prometheus-content-type:
+    description: Metrics responses must declare a Prometheus text-format content type.
+    severity: warn
+    given: "$.paths[*].get.responses['200'].content"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          anyOf:
+            - required: ["text/plain"]
+            - required: ["application/openmetrics-text"]
+            - required: ["text/plain; version=0.0.4"]
+
+  containerd-no-mutations:
+    description: The containerd metrics endpoint must not declare mutating operations.
+    severity: error
+    given: "$.paths[*]"
+    then:
+      function: falsy
+      field: post

@@ -110,12 +110,21 @@ common:
     url: https://github.com/containerd/containerd/releases
   - type: Community
     url: https://cloud-native.slack.com/
+  - type: CNCF Project
+    url: https://www.cncf.io/projects/containerd/
+  - type: License
+    url: https://github.com/containerd/containerd/blob/main/LICENSE
   - type: JSON-LD
     url: json-ld/containerd-context.jsonld
   - type: JSONSchema
     url: json-schema/containerd-config-schema.json
   - type: JSONSchema
     url: json-schema/containerd-oci-runtime-spec-schema.json
+  - type: Spectral
+    url: rules/containerd-rules.yml
+  - type: Naftiko Capabilities
+    url: capabilities/containerd-capabilities.yml
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-type: opensource

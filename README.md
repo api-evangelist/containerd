@@ -89,12 +89,16 @@ The Node Resource Interface (NRI) is a framework for plugging extensions into OC
 - [Documentation](https://containerd.io/docs/)
 - [Getting Started](https://containerd.io/docs/getting-started/)
 - [GitHub Organization](https://github.com/containerd)
-- [GitHubRepository](https://github.com/containerd/containerd)
+- [GitHub Repository](https://github.com/containerd/containerd)
 - [Change Log](https://github.com/containerd/containerd/releases)
 - [Community](https://cloud-native.slack.com/)
-- [JSON-LD](json-ld/containerd-context.jsonld)
-- [JSONSchema](json-schema/containerd-config-schema.json)
-- [JSONSchema](json-schema/containerd-oci-runtime-spec-schema.json)
+- [CNCF Project](https://www.cncf.io/projects/containerd/)
+- [License](https://github.com/containerd/containerd/blob/main/LICENSE)
+- [JSON-LD Context](json-ld/containerd-context.jsonld)
+- [Config JSON Schema](json-schema/containerd-config-schema.json)
+- [OCI Runtime Spec JSON Schema](json-schema/containerd-oci-runtime-spec-schema.json)
+- [Spectral Ruleset](rules/containerd-rules.yml)
+- [Naftiko Capabilities](capabilities/containerd-capabilities.yml)
 
 ## Maintainers
 
