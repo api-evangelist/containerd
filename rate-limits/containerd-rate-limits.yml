@@ -4,103 +4,54 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Containerd
 providerId: containerd
 created: '2026-05-04'
-modified: '2026-05-04'
+modified: '2026-05-05'
+reconciled: true
 tags:
   - Cloud Native
   - Container Runtime
-  - CRI
-  - Docker
   - gRPC
   - Kubernetes
-  - OCI
   - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Containerd API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
-headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
+description: Containerd's gRPC API is exposed locally over a Unix domain socket and (optionally) TCP
+  by the containerd daemon. There is no built-in per-RPC rate limiting on the API surface itself; backpressure
+  comes from gRPC concurrency settings, the runtime's resource ceilings, and the kubelet's CRI flow-control.
+  Operators bound throughput through host resources (CPU, IO, fd / connection limits), the gRPC server's
+  max-concurrent-streams setting, and registry-side image-pull rate limits.
+sources:
+  - https://github.com/containerd/containerd/blob/main/docs/man/containerd-config.toml.5.md
+  - https://kubernetes.io/docs/concepts/architecture/cri/
 responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
+  resourceExhausted: 'gRPC RESOURCE_EXHAUSTED'
+  unavailable: 'gRPC UNAVAILABLE'
 limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Containerd gRPC API
-      - Containerd CRI API
-      - Containerd Metrics API
-      - Containerd NRI API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Containerd gRPC API
-      - Containerd CRI API
-      - Containerd Metrics API
-      - Containerd NRI API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Containerd gRPC API
-      - Containerd CRI API
-      - Containerd Metrics API
-      - Containerd NRI API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Containerd gRPC API
-      - Containerd CRI API
-      - Containerd Metrics API
-      - Containerd NRI API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Containerd gRPC API
-      - Containerd CRI API
-      - Containerd Metrics API
-      - Containerd NRI API
+  - name: gRPC Concurrency Bound
+    scope: daemon
+    metric: concurrent_streams
+    limit: 'configured via containerd config grpc.max_recv_message_size / max_send_message_size and host
+      resource ceilings'
+    notes: Containerd does not impose per-RPC token-bucket limits; concurrency is governed by gRPC server
+      settings and OS-level fd / cgroup limits.
+  - name: CRI Image-Pull Concurrency
+    scope: daemon
+    metric: concurrent_image_pulls
+    limit: 'configured via plugins."io.containerd.grpc.v1.cri".registry and max_concurrent_downloads'
+    notes: CRI image pulls are flow-controlled; tune `max_concurrent_downloads` and per-registry mirrors.
+  - name: Registry-Side Limits
+    scope: external
+    metric: varies
+    limit: 'inherits from each container registry (Docker Hub / GHCR / ECR)'
+    notes: Image pulls inherit the upstream registry's rate limiting (e.g. Docker Hub's anonymous /
+      authenticated pull limits).
 policies:
+  - name: Operator-Owned Limits
+    description: Containerd does not impose API rate limits; operators tune gRPC server settings, host
+      resource ceilings, and the kubelet's CRI flow-control.
   - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+    description: Clients should respect gRPC RESOURCE_EXHAUSTED / UNAVAILABLE with exponential backoff
+      and jitter — the kubelet does this natively for image pulls and runtime calls.
+  - name: Authentication & Socket Permissions
+    description: Access to the containerd socket is governed by file-system permissions and (optionally)
+      mTLS for TCP exposure; there is no per-token quota.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

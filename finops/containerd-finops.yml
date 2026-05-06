@@ -1,5 +1,6 @@
 specification: FinOps Framework
 specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
 alignedWith:
   framework: FinOps Foundation Framework
   frameworkUrl: https://www.finops.org/framework/
@@ -8,152 +9,75 @@ alignedWith:
   dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
 provider: Containerd
 providerId: containerd
-publisherName: Containerd
-serviceCategory: API
+publisherName: Cloud Native Computing Foundation (CNCF)
+serviceCategory: Container Runtime / Open Source
 created: '2026-05-04'
-modified: '2026-05-04'
+modified: '2026-05-05'
+reconciled: true
 tags:
   - Cloud Native
   - Container Runtime
-  - CRI
-  - Docker
-  - gRPC
   - Kubernetes
-  - OCI
+  - OSS
   - FinOps
-  - Cost Management
   - FOCUS
-description: FinOps framework definition for the Containerd API surface. Provides a FOCUS-aligned mapping
-  for cost allocation, usage measurement, and unit-economics reporting across the provider's APIs.
-principles:
-  - name: Visibility
-    description: Make API consumption costs visible to engineering, product, and finance teams in near
-      real-time.
-  - name: Allocation
-    description: Tag every chargeable API call with the consuming team, environment, application, and
-      feature so cost can be allocated.
-  - name: Optimization
-    description: Continuously evaluate request patterns, caching, batching, and tier selection to reduce
-      cost per useful unit of work.
-  - name: Accountability
-    description: Establish budget owners and chargeback or showback flows for each consuming team.
-domains:
-  - name: Understand Usage and Cost
-    capabilities:
-      - Data Ingestion
-      - Allocation
-      - Reporting and Analytics
-      - Anomaly Management
-  - name: Quantify Business Value
-    capabilities:
-      - Planning and Estimating
-      - Forecasting
-      - Budgeting
-      - Benchmarking
-      - Unit Economics
-  - name: Optimize Usage and Cost
-    capabilities:
-      - Architecting for Cloud
-      - Rate Optimization
-      - Workload Optimization
-      - Cloud Sustainability
-      - Licensing and SaaS
-  - name: Manage the FinOps Practice
-    capabilities:
-      - FinOps Practice Operations
-      - FinOps Education and Enablement
-      - Invoicing and Chargeback
-      - Onboarding Workloads
-      - Intersecting Disciplines
+description: 'FOCUS-aligned FinOps for Containerd: CNCF-graduated OSS runtime with no per-call or license
+  cost. FinOps focuses on the underlying compute / storage / network it consumes (Kubernetes node hours,
+  registry-pull egress) rather than a vendor invoice from containerd itself.'
+sources:
+  - https://containerd.io
+  - https://github.com/containerd/containerd
 billingModel:
-  pricingCategory: Usage-Based
-  billingFrequency: Monthly
+  pricingCategory: Open Source / Free
+  billingFrequency: Not Applicable
   billingCurrency: USD
   chargeCategories:
     - Usage
-    - Purchase
-    - Tax
-    - Credit
-    - Adjustment
-  chargeFrequency: Recurring
 focusColumns:
   ServiceName: Containerd
-  ServiceCategory: Developer Tools / API
-  ProviderName: Containerd
-  PublisherName: Containerd
-  InvoiceIssuerName: Containerd
-  PricingCategory: Usage-Based
-  PricingUnit: request
+  ServiceCategory: Container Runtime
+  ProviderName: Containerd Project
+  PublisherName: Cloud Native Computing Foundation (CNCF)
+  InvoiceIssuerName: Not Applicable
   BillingCurrency: USD
   ChargeCategory: Usage
 meters:
-  - name: api_requests
-    description: Count of billable API requests
-    unit: request
+  - name: node_hours
+    description: Compute hours of nodes running containerd (proxy meter — billed by the underlying cloud
+      provider, not by containerd)
+    unit: instance-hour
     aggregation: sum
     dimensions:
-      - api
-      - endpoint
-      - tier
-      - region
-      - consumer
-  - name: data_egress
-    description: Bytes returned over the network in API responses
+      - cloud_provider
+      - instance_type
+      - cluster
+  - name: image_pull_egress
+    description: Egress from container registries during image pulls
     unit: GB
     aggregation: sum
     dimensions:
-      - api
+      - registry
       - region
-      - consumer
-  - name: compute_seconds
-    description: Server-side compute consumed by the request, where applicable
-    unit: second
-    aggregation: sum
+  - name: container_runtime_count
+    description: Containers / pods executed via the containerd CRI surface (operational meter, no charge)
+    unit: container
+    aggregation: count
     dimensions:
-      - api
-      - endpoint
-      - tier
-apis:
-  - name: Containerd gRPC API
-    baseURL: ''
-    tags:
-      - Container Runtime
-      - gRPC
-      - Lifecycle Management
-    serviceName: Containerd gRPC API
-    serviceCategory: API
-  - name: Containerd CRI API
-    baseURL: ''
-    tags:
-      - Container Runtime
-      - CRI
-      - Kubernetes
-    serviceName: Containerd CRI API
-    serviceCategory: API
-  - name: Containerd Metrics API
-    baseURL: ''
-    tags:
-      - Metrics
-      - Observability
-      - Prometheus
-    serviceName: Containerd Metrics API
-    serviceCategory: API
-  - name: Containerd NRI API
-    baseURL: ''
-    tags:
-      - Extensibility
-      - Kubernetes
-      - NRI
-      - Plugins
-    serviceName: Containerd NRI API
-    serviceCategory: API
-unitEconomics:
-  - name: Cost per 1K Requests
-    metric: billed_cost / (api_requests / 1000)
-    target: TBD
-  - name: Cost per Active Consumer
-    metric: billed_cost / active_consumers
-    target: TBD
+      - namespace
+      - cluster
+principles:
+  - name: Visibility
+    description: Containerd does not produce invoices; surface infrastructure cost via the underlying
+      cloud provider's billing exports and via Prometheus metrics scraped from the kubelet / containerd.
+  - name: Allocation
+    description: Allocate via cluster / namespace / pod labels and cloud-provider node tags; align with
+      Kubecost or OpenCost for per-workload mapping.
+  - name: Optimization
+    description: Reduce image-pull egress with registry mirrors / pull-through caches; tune `max_concurrent_downloads`;
+      consider lazy-loading snapshotters (stargz) for large images; right-size node pools.
+  - name: Accountability
+    description: Platform / SRE teams own cluster-level spend; product teams own per-namespace footprint
+      and image hygiene that drives storage and pull egress.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
