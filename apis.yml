@@ -100,13 +100,13 @@ common:
     url: https://containerd.io/
   - type: Documentation
     url: https://containerd.io/docs/
-  - type: Getting Started
+  - type: GettingStarted
     url: https://containerd.io/docs/getting-started/
-  - type: GitHub Organization
+  - type: GitHubOrganization
     url: https://github.com/containerd
   - type: GitHubRepository
     url: https://github.com/containerd/containerd
-  - type: Change Log
+  - type: ChangeLog
     url: https://github.com/containerd/containerd/releases
   - type: Community
     url: https://cloud-native.slack.com/
@@ -114,7 +114,7 @@ common:
     url: https://www.cncf.io/projects/containerd/
   - type: License
     url: https://github.com/containerd/containerd/blob/main/LICENSE
-  - type: JSON-LD
+  - type: JSONLD
     url: json-ld/containerd-context.jsonld
   - type: JSONSchema
     url: json-schema/containerd-config-schema.json
@@ -127,4 +127,4 @@ common:
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
-x-type: opensource
+kind: opensource
