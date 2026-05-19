@@ -1,0 +1,67 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Containerd Metrics API — Metrics
+  description: 'Containerd Metrics API — Metrics. 1 operations. Lead operation: Containerd Get Prometheus metrics. Self-contained
+    Naftiko capability covering one Containerd business surface.'
+  tags:
+  - Containerd
+  - Metrics
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    CONTAINERD_API_KEY: CONTAINERD_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: metrics-metrics
+    baseUri: http://localhost:1338
+    description: Containerd Metrics API — Metrics business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-metrics
+      path: /v1/metrics
+      operations:
+      - name: getmetrics
+        method: GET
+        description: Containerd Get Prometheus metrics
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    namespace: metrics-metrics-rest
+    port: 8080
+    description: REST adapter for Containerd Metrics API — Metrics. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v1/metrics
+      name: v1-metrics
+      description: REST surface for v1-metrics.
+      operations:
+      - method: GET
+        name: getmetrics
+        description: Containerd Get Prometheus metrics
+        call: metrics-metrics.getmetrics
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: metrics-metrics-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Containerd Metrics API — Metrics. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: containerd-get-prometheus-metrics
+      description: Containerd Get Prometheus metrics
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: metrics-metrics.getmetrics
+      outputParameters:
+      - type: object
+        mapping: $.
