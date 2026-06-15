@@ -1,0 +1,29 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Containerd Metrics API",
+    "version": "2.x"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Metrics",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Containerd Get Prometheus metrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://localhost:1338/v1/metrics"
+          },
+          "docs": "Returns all containerd metrics in Prometheus text exposition format. Metrics include gRPC server request counts and latency histograms (when grpc_histogram is enabled), snapshotter usage statistics, content store byte counts, task start and exit counters, and container count gauges. Each metric is labeled by namespace, snapshotter, or plugin type as appropriate. Requires the metrics address to be configured in the containerd config.toml."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
