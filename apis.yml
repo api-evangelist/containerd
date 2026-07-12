@@ -89,6 +89,8 @@ apis:
       - NRI
       - Plugins
 common:
+  - type: DomainSecurity
+    url: security/containerd-domain-security.yml
   - type: Website
     url: https://containerd.io/
   - type: Documentation
