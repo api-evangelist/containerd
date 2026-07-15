@@ -89,6 +89,8 @@ apis:
       - NRI
       - Plugins
 common:
+  - type: AgenticAccess
+    url: agentic-access/containerd-agentic-access.yml
   - type: DomainSecurity
     url: security/containerd-domain-security.yml
   - type: Website
