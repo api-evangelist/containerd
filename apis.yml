@@ -98,6 +98,10 @@ apis:
   - type: Documentation
     url: https://containerd.io/docs/
 common:
+  - type: IssueTracker
+    url: https://github.com/containerd/nri/issues
+  - type: Releases
+    url: https://github.com/containerd/nri/releases
   - type: AgenticAccess
     url: agentic-access/containerd-agentic-access.yml
   - type: DomainSecurity
