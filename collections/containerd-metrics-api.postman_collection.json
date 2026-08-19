@@ -1,0 +1,104 @@
+{
+  "item": [
+    {
+      "id": "f77b2c26-7074-4a4e-b468-516319dc7bd6",
+      "name": "Metrics",
+      "description": {
+        "content": "Prometheus-compatible metrics endpoints exposing containerd runtime statistics including gRPC request rates, snapshot usage, and task lifecycle counts.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "3983f6bb-f1a4-47c1-86b7-95a81c56c6d3",
+          "name": "Containerd Get Prometheus metrics",
+          "request": {
+            "name": "Containerd Get Prometheus metrics",
+            "description": {
+              "content": "Returns all containerd metrics in Prometheus text exposition format. Metrics include gRPC server request counts and latency histograms (when grpc_histogram is enabled), snapshotter usage statistics, content store byte counts, task start and exit counters, and container count gauges. Each metric is labeled by namespace, snapshotter, or plugin type as appropriate. Requires the metrics address to be configured in the containerd config.toml.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "metrics"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "822e1c51-7781-40c3-9314-17e27be04ff0",
+              "name": "Prometheus text format metrics.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "metrics"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "text/plain"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "# HELP containerd_snapshotter_snapshot_inodes_usage Snapshot inodes usage in bytes.\n# TYPE containerd_snapshotter_snapshot_inodes_usage gauge\ncontainerd_snapshotter_snapshot_inodes_usage{snapshotter=\"overlayfs\"} 1024\n# HELP grpc_server_handled_total Total number of RPCs completed on the server.\n# TYPE grpc_server_handled_total counter\ngrpc_server_handled_total{grpc_code=\"OK\",grpc_method=\"ListContainers\",grpc_service=\"containerd.services.containers.v1.Containers\",grpc_type=\"unary\"} 42\n",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "http://localhost:1338",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "392ef1ae-3694-45ea-a9ae-f5f9dd74833e",
+    "name": "Containerd Metrics API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The containerd metrics plugin exposes a Prometheus-compatible HTTP endpoint for scraping runtime metrics. When enabled via the metrics.address configuration option in config.toml, it serves Prometheus text format metrics covering gRPC request counts, latency histograms, snapshot usage, content store statistics, and task lifecycle events. This endpoint enables integration with Prometheus, Grafana, and other observability tooling for monitoring the containerd container runtime.\n\nContact Support:\n Name: Containerd Community",
+      "type": "text/plain"
+    }
+  }
+}
