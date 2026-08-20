@@ -16,6 +16,14 @@ accessModel:
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/containerd.png
 tags:
+  - Cloud-Native
+  - Container Runtime
+  - CRI
+  - Docker
+  - gRPC
+  - Kubernetes
+  - OCI
+tags_raw:
   - Cloud Native
   - Container Runtime
   - CRI
