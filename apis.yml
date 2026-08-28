@@ -2,6 +2,18 @@ aid: containerd
 name: Containerd
 description: An industry-standard container runtime with an emphasis on simplicity, robustness and portability.
 url: https://containerd.io/
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: false
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - openapi
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: unknown
