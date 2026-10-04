@@ -123,6 +123,9 @@ apis:
   - type: Documentation
     url: https://containerd.io/docs/
 common:
+  - type: CapabilityMap
+    url: capabilities/containerd-capability-edges.yml
+    name: Containerd Business Capability Map
   - type: IssueTracker
     url: https://github.com/containerd/nri/issues
   - type: Releases
