@@ -123,6 +123,12 @@ apis:
   - type: Documentation
     url: https://containerd.io/docs/
 common:
+  - type: Plans
+    url: plans/containerd-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/containerd-rate-limits.yml
+  - type: FinOps
+    url: finops/containerd-finops.yml
   - type: CapabilityMap
     url: capabilities/containerd-capability-edges.yml
     name: Containerd Business Capability Map
