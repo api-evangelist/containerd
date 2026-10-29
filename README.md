@@ -1,4 +1,4 @@
-# Containerd (containerd)
+# Containerd
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,126 +66,139 @@
 
 An industry-standard container runtime with an emphasis on simplicity, robustness and portability.
 
-**APIs.json:** [https://containerd.io/](https://containerd.io/)
+**Areas:** Cloud-Native · Container Runtime · CRI · Docker · gRPC · Kubernetes · OCI
 
-## Scope
+## Containerd on APIs.io
 
-- **Type:** Index
+Everything profiled for Containerd is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/containerd/](https://apis.io/providers/containerd/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (4)
 
-- Cloud Native
-- Container Runtime
-- CRI
-- Docker
-- gRPC
-- Kubernetes
-- OCI
+- [Containerd gRPC API](https://apis.io/apis/containerd/containerd-grpc-api/) — Core gRPC API for managing the full container lifecycle including containers, images, content, snapshots, namespaces, tasks, leases, events, and plugins.…
+- [Containerd CRI API](https://apis.io/apis/containerd/containerd-cri-api/) — Container Runtime Interface (CRI) implementation that enables Kubernetes to use containerd as its container runtime. Supports pod sandbox management,…
+- [Containerd NRI API](https://apis.io/apis/containerd/containerd-nri-api/) — The Node Resource Interface (NRI) is a framework for plugging extensions into OCI-compatible container runtimes. NRI plugins receive lifecycle event…
+- [Containerd Metrics API](https://apis.io/apis/containerd/containerd-metrics-api/) — Prometheus-compatible metrics endpoints exposing containerd runtime statistics including gRPC request rates, snapshot usage, and task lifecycle counts.
 
-## Timestamps
+### Published properties
 
-- **Created:** 2025-01-01
-- **Modified:** 2026-05-19
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### Agentic access (1)
 
-### Containerd gRPC API
+Which operations an agent can call, which act, and which need a human in the loop.
 
-Core gRPC API for managing the full container lifecycle including containers, images, content, snapshots, namespaces, tasks, leases, events, and plugins. Provides low-level access to all containerd functionality through Protocol Buffers service definitions.
+- [Containerd Agentic Access](https://apis.io/agentic-access/containerd/containerd-agentic-access/)
 
-- **Human URL:** [https://github.com/containerd/containerd/tree/main/api](https://github.com/containerd/containerd/tree/main/api)
+#### JSON Schema (2)
 
-#### Tags
+The data models the API reads and writes.
 
-- Container Runtime
-- gRPC
-- Lifecycle Management
+- [Containerd Configuration](https://apis.io/schemas/containerd/containerd-config/)
+- [OCI Runtime Specification](https://apis.io/schemas/containerd/containerd-oci-runtime-spec/)
 
-#### Properties
+#### JSON-LD (1)
 
-- [Documentation](https://containerd.io/docs/)
-- [Reference](https://github.com/containerd/containerd/tree/main/api)
-- [JSON Schema](json-schema/containerd-config-schema.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Schema](json-schema/containerd-oci-runtime-spec-schema.json) — [JSON Schema](https://json-schema.org/specification)
-- [Postman Collection](collections/containerd-metrics.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/containerd-metrics.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Linked-data contexts for the provider's vocabulary.
 
-### Containerd CRI API
+- [Containerd Context](https://apis.io/jsonld/containerd/containerd-context/)
 
-Container Runtime Interface (CRI) implementation that enables Kubernetes to use containerd as its container runtime. Supports pod sandbox management, container lifecycle operations, image pulling, and streaming APIs for exec, attach, and port-forward.
+#### Collections (2)
 
-- **Human URL:** [https://github.com/containerd/containerd/tree/main/pkg/cri](https://github.com/containerd/containerd/tree/main/pkg/cri)
+Postman and Open Collection request collections.
 
-#### Tags
+- [Containerd Metrics API](https://apis.io/collections/containerd/open-containerd-metrics/)
+- [Containerd Metrics API](https://apis.io/collections/containerd/open-containerd-metrics-api/)
 
-- Container Runtime
-- CRI
-- Kubernetes
+#### Governance rules (2)
 
-#### Properties
+Spectral rulesets for the provider's contracts.
 
-- [Documentation](https://containerd.io/docs/)
-- [Reference](https://github.com/containerd/containerd/tree/main/pkg/cri)
-- [JSON Schema](json-schema/containerd-config-schema.json) — [JSON Schema](https://json-schema.org/specification)
-- [Postman Collection](collections/containerd-metrics.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/containerd-metrics.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Containerd — jsonschema rules](https://apis.io/rules/containerd/containerd-jsonschema-spectral-rules/)
+- [Containerd API Rules](https://apis.io/rules/containerd/containerd-rules/)
 
-### Containerd Metrics API
+#### Security (1)
 
-The containerd metrics plugin exposes a Prometheus-compatible HTTP endpoint for scraping runtime metrics. When enabled via the metrics.address configuration option in config.toml, it serves Prometheus text format metrics covering gRPC request counts, latency histograms, snapshot usage, content store statistics, and task lifecycle events.
+Authentication, trust centre, and vulnerability disclosure.
 
-- **Human URL:** [https://containerd.io/docs/](https://containerd.io/docs/)
+- [Containerd Domain Security](https://apis.io/security/containerd/containerd-domain-security/)
 
-#### Tags
+#### Plans and pricing (1)
 
-- Metrics
-- Observability
-- Prometheus
+Published plans, tiers and prices.
 
-#### Properties
+- [Containerd Plans Pricing](https://apis.io/plans/containerd/containerd-plans-pricing/)
 
-- [Documentation](https://containerd.io/docs/)
-- [OpenAPI](openapi/containerd-metrics-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/containerd-metrics.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/containerd-metrics.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+#### Rate limits (1)
 
-### Containerd NRI API
+Published request limits.
 
-The Node Resource Interface (NRI) is a framework for plugging extensions into OCI-compatible container runtimes. NRI plugins receive lifecycle event notifications and can make controlled modifications to container configurations before creation, enabling domain-specific resource management without modifying the runtime itself.
+- [Containerd Rate Limits](https://apis.io/rate-limits/containerd/containerd-rate-limits/)
 
-- **Human URL:** [https://github.com/containerd/nri](https://github.com/containerd/nri)
+#### FinOps (1)
 
-#### Tags
+What the API costs to run, by operation.
 
-- Extensibility
-- Kubernetes
-- NRI
-- Plugins
+- [Containerd Finops](https://apis.io/finops/containerd/containerd-finops/)
 
-#### Properties
+## Where to find this API
 
-- [Documentation](https://github.com/containerd/containerd/blob/main/docs/NRI.md)
-- [GitHub Repository](https://github.com/containerd/nri)
-- [Postman Collection](collections/containerd-metrics.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/containerd-metrics.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://containerd.io/)
 - [Documentation](https://containerd.io/docs/)
-- [Getting Started](https://containerd.io/docs/getting-started/)
-- [GitHub Organization](https://github.com/containerd)
-- [GitHub Repository](https://github.com/containerd/containerd)
+- [Getting started](https://containerd.io/docs/getting-started/)
 - [Changelog](https://github.com/containerd/containerd/releases)
-- [Community](https://cloud-native.slack.com/)
-- [C N C F  Project](https://www.cncf.io/projects/containerd/)
-- [License](https://github.com/containerd/containerd/blob/main/LICENSE)
-- [JSON-LD](json-ld/containerd-context.jsonld) — [JSON-LD](https://www.w3.org/TR/json-ld11/)
-- [JSON Schema](json-schema/containerd-config-schema.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Schema](json-schema/containerd-oci-runtime-spec-schema.json) — [JSON Schema](https://json-schema.org/specification)
-- [Spectral Rules](rules/containerd-rules.yml) — [Spectral](https://docs.stoplight.io/docs/spectral)
+- [GitHub](https://github.com/containerd)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 30.0** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 55.4 |
+| Contract quality | 53.8 |
+| Contract governance | 13.6 |
+| Operational transparency | 26.3 |
+| Developer ergonomics | 31.0 |
+| Access clarity | 5.3 |
+
+**Agent readiness 23.6** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | na |
+| MCP Server | — |
+| Auth Clarity | — |
+| Idempotency | na |
+| Error Semantics | — |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | na |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 10.8** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/containerd/](https://apis.io/providers/containerd/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Containerd: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/containerd/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
